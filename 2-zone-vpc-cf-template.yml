@@ -1,0 +1,327 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: 2 Zone (2 Public 2 Private) VPC CloudFormation Template
+
+Parameters:
+
+    Environment:
+        Description: 'Environment definition.'
+        Type: 'String'
+        Default: 'Dev'
+
+Mappings:
+
+    NetworkToSubnet:
+        "10.0.0.0":
+            PublicSubnetZoneA: "10.0.10.0/24"
+            PrivateSubnetZoneA: "10.0.20.0/24"
+            PublicSubnetZoneB: "10.0.30.0/24"
+            PrivateSubnetZoneB: "10.0.40.0/24"
+
+Resources:
+
+    VPC:
+        Type: 'AWS::EC2::VPC'
+        Properties:
+            CidrBlock:
+                'Fn::Join': [ '/', [ '10.0.0.0', '16' ] ]
+            EnableDnsSupport: true
+            EnableDnsHostnames: true
+            InstanceTenancy: 'default'
+            Tags:
+                - Key: 'Name'
+                  Value:
+                      Ref: 'AWS::StackName'
+                - Key: 'Environment'
+                  Value:
+                      Ref: 'Environment'
+
+    PublicSubnetZoneA:
+        Type: 'AWS::EC2::Subnet'
+        Properties:
+            AvailabilityZone:
+                Fn::Select:
+                - '0'
+                - Fn::GetAZs:
+                    Ref: 'AWS::Region'
+            CidrBlock:
+                Fn::FindInMap:
+                - NetworkToSubnet
+                - '10.0.0.0'
+                - PublicSubnetZoneA
+            MapPublicIpOnLaunch: 'True'
+            VpcId:
+                Ref: 'VPC'
+            Tags:
+                - Key: 'Name'
+                  Value:
+                      'Fn::Join': [ ':', [ 'Public', 'Zone A', !Ref 'AWS::StackName' ] ]
+                - Key: 'Environment'
+                  Value:
+                      Ref: 'Environment'
+
+    PrivateSubnetZoneA:
+        Type: 'AWS::EC2::Subnet'
+        Properties:
+            AvailabilityZone:
+                Fn::Select:
+                - '0'
+                - Fn::GetAZs:
+                    Ref: 'AWS::Region'
+            CidrBlock:
+                Fn::FindInMap:
+                - NetworkToSubnet
+                - '10.0.0.0'
+                - PrivateSubnetZoneA
+            MapPublicIpOnLaunch: 'False'
+            VpcId:
+                Ref: 'VPC'
+            Tags:
+                - Key: 'Name'
+                  Value:
+                      'Fn::Join': [ ':', [ 'Private', 'Zone A', !Ref 'AWS::StackName' ] ]
+                - Key: 'Environment'
+                  Value:
+                      Ref: 'Environment'
+
+    PublicSubnetZoneB:
+        Type: 'AWS::EC2::Subnet'
+        Properties:
+            AvailabilityZone:
+                Fn::Select:
+                - '1'
+                - Fn::GetAZs:
+                    Ref: 'AWS::Region'
+            CidrBlock:
+                Fn::FindInMap:
+                - NetworkToSubnet
+                - '10.0.0.0'
+                - PublicSubnetZoneB
+            MapPublicIpOnLaunch: 'True'
+            VpcId:
+                Ref: 'VPC'
+            Tags:
+                - Key: 'Name'
+                  Value:
+                      'Fn::Join': [ ':', [ 'Public', 'Zone B', !Ref 'AWS::StackName' ] ]
+                - Key: 'Environment'
+                  Value:
+                      Ref: 'Environment'
+
+    PrivateSubnetZoneB:
+        Type: 'AWS::EC2::Subnet'
+        Properties:
+            AvailabilityZone:
+                Fn::Select:
+                - '1'
+                - Fn::GetAZs:
+                    Ref: 'AWS::Region'
+            CidrBlock:
+                Fn::FindInMap:
+                - NetworkToSubnet
+                - '10.0.0.0'
+                - PrivateSubnetZoneB
+            MapPublicIpOnLaunch: 'False'
+            VpcId:
+                Ref: 'VPC'
+            Tags:
+                - Key: 'Name'
+                  Value:
+                      'Fn::Join': [ ':', [ 'Private', 'Zone B', !Ref 'AWS::StackName' ] ]
+                - Key: 'Environment'
+                  Value:
+                      Ref: 'Environment'
+
+    InternetGateway:
+        Type: 'AWS::EC2::InternetGateway'
+        Properties:
+            Tags:
+                - Key: 'Name'
+                  Value:
+                      Ref: 'AWS::StackName'
+                - Key: 'Environment'
+                  Value:
+                      Ref: 'Environment'
+
+    GatewayAttachment:
+        Type: AWS::EC2::VPCGatewayAttachment
+        Properties:
+            InternetGatewayId:
+                Ref: 'InternetGateway'
+            VpcId:
+                Ref: 'VPC'
+
+    RouteTablePublicZoneA:
+        Type: AWS::EC2::RouteTable
+        Properties:
+            VpcId:
+                Ref: 'VPC'
+            Tags:
+                - Key: 'Name'
+                  Value:
+                      'Fn::Join': [ ':', [ 'Public', 'Zone A', !Ref 'AWS::StackName' ] ]
+                - Key: 'Environment'
+                  Value:
+                      Ref: 'Environment'
+
+    RouteTablePublicZoneB:
+        Type: AWS::EC2::RouteTable
+        Properties:
+            VpcId:
+                Ref: 'VPC'
+            Tags:
+                - Key: 'Name'
+                  Value:
+                      'Fn::Join': [ ':', [ 'Public', 'Zone B', !Ref 'AWS::StackName' ] ]
+                - Key: 'Environment'
+                  Value:
+                      Ref: 'Environment'
+
+    RoutePublicZoneA:
+        DependsOn:
+            - InternetGateway
+        Type: AWS::EC2::Route
+        Properties:
+            DestinationCidrBlock: '0.0.0.0/0'
+            GatewayId:
+                Ref: 'InternetGateway'
+            RouteTableId:
+                Ref: 'RouteTablePublicZoneA'
+
+    RoutePublicZoneB:
+        DependsOn:
+            - InternetGateway
+        Type: AWS::EC2::Route
+        Properties:
+            DestinationCidrBlock: 0.0.0.0/0
+            GatewayId:
+                Ref: 'InternetGateway'
+            RouteTableId:
+                Ref: 'RouteTablePublicZoneB'
+
+    RouteAssociationPublicSubnetZoneA:
+        Type: AWS::EC2::SubnetRouteTableAssociation
+        Properties:
+            SubnetId:
+                Ref: 'PublicSubnetZoneA'
+            RouteTableId:
+                Ref: 'RouteTablePublicZoneA'
+
+    RouteAssociationPublicSubnetZoneB:
+        Type: AWS::EC2::SubnetRouteTableAssociation
+        Properties:
+            SubnetId:
+                Ref: 'PublicSubnetZoneB'
+            RouteTableId:
+                Ref: 'RouteTablePublicZoneB'
+
+    ElasticIpZoneA:
+        DependsOn:
+            - GatewayAttachment
+        Type: AWS::EC2::EIP
+        Properties:
+            Domain: vpc
+
+    ElasticIpZoneB:
+        DependsOn:
+            - GatewayAttachment
+        Type: AWS::EC2::EIP
+        Properties:
+            Domain: vpc
+
+    NatGatewayZoneA:
+        Type: AWS::EC2::NatGateway
+        DependsOn:
+            - InternetGateway
+        Properties:
+            AllocationId:
+                Fn::GetAtt:
+                    - ElasticIpZoneA
+                    - AllocationId
+            SubnetId:
+                Ref: 'PublicSubnetZoneA'
+
+    NatGatewayZoneB:
+        Type: AWS::EC2::NatGateway
+        DependsOn:
+            - InternetGateway
+        Properties:
+            AllocationId:
+                Fn::GetAtt:
+                    - ElasticIpZoneB
+                    - AllocationId
+            SubnetId:
+                Ref: 'PublicSubnetZoneB'
+
+    RouteTablePrivateZoneA:
+        Type: AWS::EC2::RouteTable
+        Properties:
+            VpcId:
+                Ref: 'VPC'
+            Tags:
+                - Key: 'Name'
+                  Value:
+                      'Fn::Join': [ ':', [ 'Private', 'Zone A', !Ref 'AWS::StackName' ] ]
+                - Key: 'Environment'
+                  Value:
+                      Ref: 'Environment'
+
+    RouteTablePrivateZoneB:
+        Type: AWS::EC2::RouteTable
+        Properties:
+            VpcId:
+                Ref: 'VPC'
+            Tags:
+                - Key: 'Name'
+                  Value:
+                      'Fn::Join': [ ':', [ 'Private', 'Zone B', !Ref 'AWS::StackName' ] ]
+                - Key: 'Environment'
+                  Value:
+                      Ref: 'Environment'
+
+    RouteAssociationPrivateSubnetZoneA:
+        Type: AWS::EC2::SubnetRouteTableAssociation
+        Properties:
+            SubnetId:
+                Ref: 'PrivateSubnetZoneA'
+            RouteTableId:
+                Ref: 'RouteTablePrivateZoneA'
+
+    RouteAssociationPrivateSubnetZoneB:
+        Type: AWS::EC2::SubnetRouteTableAssociation
+        Properties:
+            SubnetId:
+                Ref: 'PrivateSubnetZoneB'
+            RouteTableId:
+                Ref: 'RouteTablePrivateZoneB'
+
+    NatRouteZoneA:
+        Type: AWS::EC2::Route
+        Properties:
+            DestinationCidrBlock: 0.0.0.0/0
+            NatGatewayId:
+                Ref: 'NatGatewayZoneA'
+            RouteTableId:
+                Ref: 'RouteTablePrivateZoneA'
+
+    NatRouteZoneB:
+        Type: AWS::EC2::Route
+        Properties:
+            DestinationCidrBlock: 0.0.0.0/0
+            NatGatewayId:
+                Ref: 'NatGatewayZoneB'
+            RouteTableId:
+                Ref: 'RouteTablePrivateZoneB'
+
+Outputs:
+    VPC:
+        Description: 'Virtual Private Cloud'
+        Value:
+          Ref: 'VPC'
+        Export:
+          Name: VPC
+    Environment:
+      Description: 'Deployment Environment'
+      Value:
+        Ref: 'Environment'
+      Export:
+        Name: Environment
