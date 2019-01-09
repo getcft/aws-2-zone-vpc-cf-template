@@ -331,11 +331,7 @@ Outputs:
         Description: 'Virtual Private Cloud'
         Value:
           Ref: 'VPC'
-        Export:
-          Name: VPC
     Environment:
       Description: 'Deployment Environment'
       Value:
         Ref: 'Environment'
-      Export:
-        Name: Environment
