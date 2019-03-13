@@ -1,5 +1,5 @@
 # aws-2-zone-vpc-cf-template
-[![Build Status](https://travis-ci.org/getcft/aws-2-zone-vpc-cf-template.svg?branch=master)](https://travis-ci.org/getcft/aws-2-zone-vpc-cf-templa    te)  
+[![Build Status](https://travis-ci.org/getcft/aws-2-zone-vpc-cf-template.svg?branch=master)](https://travis-ci.org/getcft/aws-2-zone-vpc-cf-template)
 
 ## Description:
 
