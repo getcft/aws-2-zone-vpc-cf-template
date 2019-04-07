@@ -9,7 +9,7 @@ AWS CloudFormation provides a common language for you to describe and provision 
 
 Amazon Virtual Private Cloud (Amazon VPC) lets you provision a logically isolated section of the AWS Cloud where you can launch AWS resources in a virtual network that you define.
 
-## AWS Resource Costs
+## AWS Resource Costs:
 
 As with most AWS services you will incur costs for usage. For this CloudFormation template the resources that incur costs are as follows:
 
@@ -24,7 +24,7 @@ As with most AWS services you will incur costs for usage. For this CloudFormatio
    * **AmazonVPCFullAccess**
    * **AmazonEC2FullAccess**
 
-## Deploy:
+## Deploy the CloudFormation Template:
 
 **AWS Management Console**
 
@@ -38,7 +38,7 @@ As with most AWS services you will incur costs for usage. For this CloudFormatio
 5. Continue choosing **Next**
 6. Click **Create** (This will take a few minutes for resources to be created)
 
-## The Result of the CloudFormation:
+## Results of the CloudFormation Template:
 
 In the *AWS Management Console* you should be able to **verify** the following have been created:
 
