@@ -21,4 +21,4 @@ jobs:
       - name: Run a multi-line script
         run: |
           pip install awscli
-          aws cloudformation validate-template --template-body file://2-zone-vpc-cf-template.yml
+          aws cloudformation validate-template --template-body file://2-zone-vpc-cf-template.yml --region us-east-1
