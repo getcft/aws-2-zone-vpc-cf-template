@@ -1,5 +1,5 @@
 # aws-2-zone-vpc-cf-template
-[![Build Status](https://travis-ci.org/getcft/aws-2-zone-vpc-cf-template.svg?branch=master)](https://travis-ci.org/getcft/aws-2-zone-vpc-cf-template)
+[![CloudFormation Validation](https://github.com/getcft/aws-2-zone-vpc-cf-template/actions/workflows/cloudformation-validation.yml/badge.svg)](https://github.com/getcft/aws-2-zone-vpc-cf-template/actions/workflows/cloudformation-validation.yml)
 
 ## Description:
 
