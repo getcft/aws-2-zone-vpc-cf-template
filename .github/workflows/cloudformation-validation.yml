@@ -1,4 +1,4 @@
-name: CloudFormation-Validation
+name: CloudFormation Validation
 
 on:
   push:
