@@ -20,5 +20,5 @@ jobs:
           
       - name: Run a multi-line script
         run: |
-          pip install --upgrade --user awscli,
+          pip install awscli
           aws cloudformation validate-template --template-body file://2-zone-vpc-cf-template.yml
