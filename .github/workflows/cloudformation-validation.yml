@@ -14,11 +14,11 @@ jobs:
     
     steps:
       - uses: actions/checkout@v4
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           
-      - name: Run a multi-line script
+      - name: CloudFormation-Validation
         run: |
           pip install awscli
           aws cloudformation validate-template --template-body file://2-zone-vpc-cf-template.yml --region us-east-1
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
