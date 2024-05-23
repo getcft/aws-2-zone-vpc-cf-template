@@ -25,4 +25,4 @@ jobs:
       - name: CloudFormation Linter
         run: |
           pip install cfn-lint
-          cfn-lint 2-zone-vpc-cf-template.yml
+          cfn-lint -I 2-zone-vpc-cf-template.yml
