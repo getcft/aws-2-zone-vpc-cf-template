@@ -191,8 +191,6 @@ Resources:
                       Ref: 'Environment'
 
     RoutePublicZoneA:
-        DependsOn:
-            - InternetGateway
         Type: AWS::EC2::Route
         Properties:
             DestinationCidrBlock: '0.0.0.0/0'
@@ -202,8 +200,6 @@ Resources:
                 Ref: 'RouteTablePublicZoneA'
 
     RoutePublicZoneB:
-        DependsOn:
-            - InternetGateway
         Type: AWS::EC2::Route
         Properties:
             DestinationCidrBlock: 0.0.0.0/0
