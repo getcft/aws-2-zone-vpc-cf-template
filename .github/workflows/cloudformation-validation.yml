@@ -23,4 +23,6 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       - name: CloudFormation Linter
-        run: cfn-lint 2-zone-vpc-cf-template.yml
+        run: |
+          pip install cfn-lint
+          cfn-lint 2-zone-vpc-cf-template.yml
