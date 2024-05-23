@@ -15,12 +15,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
           
-      - name: CloudFormation-Validation
+      - name: CloudFormation Template Validation
         run: |
           pip install awscli
-          pip install cfn-lint
           aws cloudformation validate-template --template-body file://2-zone-vpc-cf-template.yml --region us-east-1
-          cfn-lint 2-zone-vpc-cf-template.yml
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      - name: CloudFormation Linter
+        run: |
+          pip install cfn-lint
+          cfn-lint -I 2-zone-vpc-cf-template.yml
